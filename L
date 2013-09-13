@@ -1,0 +1,122 @@
+module Library
+  class Book
+    attr_reader :name, :author
+    
+    def initialize(name, author)
+      @name = name
+      @author = author
+      @shelf = nil
+    end
+    
+    def enshelf(shelf)
+      shelf.add_book(self)
+      @shelf = shelf
+    end
+    
+    def unshelf
+      @shelf.remove_book(self)
+      @shelf = nil
+    end
+    
+    def to_s
+      "#{@name} by #{@author}"
+    end
+    
+    def to_a
+      [self]
+    end
+    
+    def ==(other_book)
+      puts "Comparing 2 books #{self} and #{other_book}"
+      @name == other_book.name && @author == other_book.author
+    end
+  end
+  
+  class Shelf
+    attr_reader :books
+    
+    def initialize(books = nil)
+      @books = []
+      if books
+        @books = books.to_a.each {|b| b.enshelf self }
+      end 
+    end
+    
+    def add_book(book)
+      @books << book
+    end
+    
+    def remove_book(book)
+      @books.delete book
+    end
+  end
+  
+  class Library
+    attr_reader :books, :shelfs
+    
+    def initialize
+      @books = []
+      @shelfs = []
+    end
+    
+    def add_shelf(shelf = nil)
+      if(shelf)
+        @books.push(*(shelf.books))
+        @shelfs << shelf
+      else
+        @shelfs << Shelf.new
+      end
+    end
+    
+    def add_book(book)
+      @books << book
+    end
+    
+  end
+
+  
+  
+  books = [Book.new("The alchemist ", "Paulo coelho"), Book.new("Moby-Dick, or The Whale", "Herman Melville")]
+  puts books
+  puts "----------------"
+  
+  shelf = Shelf.new(books)
+  shelf.add_book(Book.new("The Last Leaf", "O.Henry"))
+  puts shelf.books
+  puts "----------------"
+  
+  books[0].unshelf
+  puts shelf.books
+  puts "----------------"
+  
+  book = Book.new("What Is to Be Done?", "Vladimir Lenin,")
+  book.enshelf(shelf)
+  puts shelf.books
+  puts "----------------"
+  
+  empty_shelf = Shelf.new
+  puts empty_shelf.books
+  puts "----------------"
+  
+  one_book = Book.new("Two Treatises of Government", "Jonh Locke")
+  one_book_shelf = Shelf.new(one_book)
+  puts one_book_shelf.books
+  puts "----------------"
+  
+  library = Library.new
+  puts "count of shelf #{library.shelfs.size}"
+  puts "count of books #{library.books.size}"
+  puts "----------------"
+  library.add_book(one_book)
+  puts "count of shelf #{library.shelfs.size}"
+  puts "count of books #{library.books.size}"
+  puts "----------------"
+  library.add_shelf(shelf)
+  puts "count of shelf #{library.shelfs.size}"
+  puts "count of books #{library.books.size}"
+  puts "----------------"
+  puts "All books in library"
+  puts library.books
+  
+  
+end
